@@ -24,8 +24,8 @@ android {
         applicationId = "io.github.patevan9.glucose.installer"
         minSdk = 28 // Android 9 phones and newer
         targetSdk = 35
-        versionCode = 101
-        versionName = "1.0.1"
+        versionCode = 102
+        versionName = "1.0.2"
     }
 
     signingConfigs {

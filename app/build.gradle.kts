@@ -4,7 +4,7 @@ plugins {
     id("com.android.application")
 }
 
-// Release signing: a SEPARATE installer key (not the Glucose Glance key).
+// Release signing: a SEPARATE installer key (not the ClearBG Watch signing key).
 // It is NEVER committed. Its location and passwords come from
 // installer/keystore.properties (git-ignored), e.g.:
 //   storeFile=/path/to/glucose-installer.keystore
@@ -24,8 +24,8 @@ android {
         applicationId = "io.github.patevan9.glucose.installer"
         minSdk = 28 // Android 9 phones and newer
         targetSdk = 35
-        versionCode = 102
-        versionName = "1.0.2"
+        versionCode = 110
+        versionName = "1.1.0"
     }
 
     signingConfigs {
@@ -67,9 +67,9 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
 }
 
-// ---- Pack the official Glucose Glance files (from the watch-latest release) ----
+// ---- Pack the official ClearBG Watch files (from the watch-latest release) ----
 // Put glucose-app.apk and glucose-watchface.apk in installer/bundle/ (not committed).
-// The installer checks at run time that both are signed with the Glucose Glance key.
+// The installer checks at run time that both are signed with the ClearBG Watch signing key.
 val packedDir = layout.buildDirectory.dir("generated/glucose")
 val packGlucose = tasks.register<Copy>("packGlucose") {
     from(rootProject.file("bundle")) { include("glucose-app.apk", "glucose-watchface.apk") }

@@ -19,7 +19,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 /**
- * Glucose Glance Installer — Step 1 proof of concept: "Connect and Identify".
+ * ClearBG Installer — Step 1 proof of concept: "Connect and Identify".
  *
  *   1. Find the watch on Wi-Fi (or type its address).
  *   2. Pair with the 6-digit code shown on the watch.
@@ -69,8 +69,8 @@ class MainActivity : androidx.activity.ComponentActivity() {
             setBackgroundColor(Color.BLACK)
         }
 
-        page.addView(heading("Glucose Glance Installer"))
-        page.addView(text("Installs and updates Glucose Glance and its free watch face on your Wear OS watch. " +
+        page.addView(heading("ClearBG Installer"))
+        page.addView(text("Installs and updates ClearBG Watch and its free watch face on your Wear OS watch. " +
             "It never removes anything from your watch.\n\nBy Lippy Robotics Labs."))
 
         // ---- Before you start ----
@@ -143,19 +143,19 @@ class MainActivity : androidx.activity.ComponentActivity() {
         page.addView(result)
 
         // ---- Step 4: install or update ----
-        page.addView(heading("4. Install or update Glucose Glance"))
+        page.addView(heading("4. Install or update ClearBG Watch"))
         page.addView(text(
             "Do step 3 first (same IP address and port). Watch battery above 50%.\n\n" +
-            "Tap \"Check my watch\" to see what will be installed. If Glucose Glance is already on " +
+            "Tap \"Check my watch\" to see what will be installed. If ClearBG Watch is already on " +
             "your watch, your login, settings and readings are kept. Nothing is ever removed."
         ))
         page.addView(button("Check my watch") { doCheckUpdate() })
-        updateButton = button("Install / update Glucose Glance") { confirmUpdate() }.apply { isEnabled = false }
+        updateButton = button("Install / update ClearBG Watch") { confirmUpdate() }.apply { isEnabled = false }
         page.addView(updateButton)
         test2Msg = msgView(); page.addView(test2Msg)
         updateResult = text("")
         page.addView(updateResult)
-        page.addView(text("Optional: already have Glucose Glance? You can first save a copy of the version on your watch to this phone's Downloads."))
+        page.addView(text("Optional: already have ClearBG Watch? You can first save a copy of the version on your watch to this phone's Downloads."))
         page.addView(button("Save a copy of what is on my watch") { confirmSaveCopy() })
 
         // ---- Step 4: finish (always shown, highlighted when the watch is done) ----
@@ -372,8 +372,8 @@ class MainActivity : androidx.activity.ComponentActivity() {
                     appendLine("Is a watch: ${if (w.isWatch) "Yes" else "No — this may not be a watch"}")
                     appendLine("Processor: ${w.cpu}")
                     appendLine()
-                    appendLine("Glucose Glance app: ${w.appVersion ?: "not installed"}")
-                    appendLine("Glucose Glance watch face: ${w.faceVersion ?: "not installed"}")
+                    appendLine("ClearBG Watch app: ${w.appVersion ?: "not installed"}")
+                    appendLine("ClearBG Watch Face: ${w.faceVersion ?: "not installed"}")
                     appendLine("Watch face supported: ${if (w.faceSupported) "Yes" else "No (needs Wear OS 4 or newer)"}")
                 }
             } catch (e: Exception) {
@@ -399,7 +399,7 @@ class MainActivity : androidx.activity.ComponentActivity() {
         val (host, port) = step3Address() ?: return
         android.app.AlertDialog.Builder(this)
             .setTitle("Save a copy?")
-            .setMessage("This copies the Glucose Glance app and watch face FROM your watch to this phone's Downloads, " +
+            .setMessage("This copies the ClearBG Watch app and watch face FROM your watch to this phone's Downloads, " +
                 "folder \"${PhoneDownloads.FOLDER}\".\n\nNothing on the watch is changed.")
             .setPositiveButton("Save copy") { _, _ ->
                 test2Msg.say("Saving a copy… keep the watch nearby and awake.")
@@ -407,7 +407,7 @@ class MainActivity : androidx.activity.ComponentActivity() {
                     try {
                         val files = WatchLink.saveCopies(this@MainActivity, host, port)
                         if (files.isEmpty()) {
-                            test2Msg.say("Glucose Glance is not on this watch, so there is nothing to save.")
+                            test2Msg.say("ClearBG Watch is not on this watch, so there is nothing to save.")
                         } else {
                             savedCopy = true
                             test2Msg.say("✅ Copy saved. Nothing on the watch was changed.")
@@ -430,7 +430,7 @@ class MainActivity : androidx.activity.ComponentActivity() {
             try {
                 plan = WatchLink.checkUpdate(this@MainActivity, host, port)
                 updateResult.text = buildString {
-                    appendLine("Glucose Glance files checked: genuine ✅\n")
+                    appendLine("ClearBG Watch files checked: genuine ✅\n")
                     for (p in plan) {
                         val line = when (p.action) {
                             WatchLink.Action.UPDATE -> "${p.onWatchName} → ${p.newName}  (update)"
@@ -444,7 +444,7 @@ class MainActivity : androidx.activity.ComponentActivity() {
                 }
                 val anything = plan.any { it.action == WatchLink.Action.UPDATE || it.action == WatchLink.Action.INSTALL }
                 updateButton.isEnabled = anything
-                test2Msg.say(if (anything) "Ready. Tap \"Install / update Glucose Glance\" when you are ready." else "Your watch is up to date. Nothing to do.")
+                test2Msg.say(if (anything) "Ready. Tap \"Install / update ClearBG Watch\" when you are ready." else "Your watch is up to date. Nothing to do.")
             } catch (e: Exception) {
                 test2Msg.say("Could not check: ${plain(e)}\nNothing on the watch was changed.")
             }
@@ -457,10 +457,10 @@ class MainActivity : androidx.activity.ComponentActivity() {
             .joinToString("\n") { "• ${it.bundled.label}: ${it.onWatchName ?: "new"} → ${it.newName}" }
         val isUpdate = plan.any { it.action == WatchLink.Action.UPDATE }
         val extra = if (isUpdate) "\n\nYour login and settings are kept.\n\n" +
-            "The watch may switch to another watch face during the update. If it does, choose Glucose Glance again."
+            "The watch may switch to another watch face during the update. If it does, choose ClearBG Watch Face again."
             else ""
         android.app.AlertDialog.Builder(this)
-            .setTitle(if (isUpdate) "Update Glucose Glance?" else "Install Glucose Glance?")
+            .setTitle(if (isUpdate) "Update ClearBG Watch?" else "Install ClearBG Watch?")
             .setMessage("$changes$extra")
             .setPositiveButton(if (isUpdate) "Update" else "Install") { _, _ -> doUpdate(host, port) }
             .setNegativeButton("Cancel", null)
@@ -478,19 +478,19 @@ class MainActivity : androidx.activity.ComponentActivity() {
                     runOnUiThread { updateResult.append(line + "\n") }
                 }
                 if (firstInstall) {
-                    test2Msg.say("✅ Glucose Glance is installed!")
+                    test2Msg.say("✅ ClearBG Watch is installed!")
                     updateResult.append(
                         "\nNow on the watch:\n" +
-                        "1. Open Glucose Glance from the app list. Choose Dexcom or Nightscout and sign in.\n" +
-                        "2. Watch face: press and hold your watch face, swipe to Glucose Glance and tap it.\n" +
+                        "1. Open ClearBG from the app list. Choose your CGM and sign in.\n" +
+                        "2. Watch face: press and hold your watch face, swipe to ClearBG Watch Face and tap it.\n" +
                         "3. Then do step 5 below."
                     )
                 } else {
-                    test2Msg.say("✅ Glucose Glance is updated!")
+                    test2Msg.say("✅ ClearBG Watch is updated!")
                     updateResult.append(
                         "\nNow check on the watch:\n" +
-                        "1. Open Glucose Glance: your glucose shows.\n" +
-                        "2. Watch face: if it changed, press and hold it and choose Glucose Glance again.\n" +
+                        "1. Open ClearBG: your glucose shows.\n" +
+                        "2. Watch face: if it changed, press and hold it and choose ClearBG Watch Face again.\n" +
                         "3. Then do step 5 below."
                     )
                 }

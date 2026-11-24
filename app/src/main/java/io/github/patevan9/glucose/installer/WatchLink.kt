@@ -17,29 +17,29 @@ import java.io.File
  *  - identify() : reads a fixed list of facts about the watch
  *
  * Install or update:
- *  - saveCopies()   : optional, READ-ONLY. Copies the Glucose Glance app and
+ *  - saveCopies()   : optional, READ-ONLY. Copies the ClearBG Watch app and
  *    watch face that are on the watch to the phone's Downloads folder.
  *  - checkUpdate()  : READ-ONLY. Compares the watch's versions with the
  *    official files packed in this installer.
- *  - runUpdate()    : updates Glucose Glance and its watch face, only if each
- *    packed file is signed with the Glucose Glance key and is NEWER.
+ *  - runUpdate()    : updates ClearBG Watch and its watch face, only if each
+ *    packed file is signed with the ClearBG Watch key and is NEWER.
  *
  * There is deliberately NO uninstall, clear-data, settings change, downgrade
- * or free-form command here. Only the 2 Glucose Glance packages below can be installed.
+ * or free-form command here. Only the 2 ClearBG Watch packages below can be installed.
  */
 object WatchLink {
 
-    private const val PHONE_NAME = "Glucose Glance Installer"
+    private const val PHONE_NAME = "ClearBG Installer"
     private const val CONNECT_TIMEOUT_MS = 10_000
     private const val READ_TIMEOUT_MS = 15_000
 
-    // Glucose Glance packages.
+    // ClearBG Watch packages.
     private const val APP_PACKAGE = "io.github.patevan9.glucose"
     private const val FACE_PACKAGE = "io.github.patevan9.glucose.watchface"
 
     /**
-     * SHA-256 fingerprint of the Glucose Glance signing certificate.
-     * Packed Glucose Glance files must be signed with exactly this key.
+     * SHA-256 fingerprint of the ClearBG Watch signing certificate.
+     * Packed ClearBG Watch files must be signed with exactly this key.
      */
     private const val GLUCOSE_CERT_SHA256 =
         "44521be5d3bd31d40a72c81264cc2c75ab0338a702843f517bb5ebd154efb1bd"
@@ -47,8 +47,8 @@ object WatchLink {
     /** What Test 2 may install, in this order: the app first, then the watch face. */
     data class Bundled(val pkg: String, val label: String, val asset: String, val fileLabel: String)
     val BUNDLED = listOf(
-        Bundled(APP_PACKAGE, "Glucose Glance app", "glucose-app.apk", "app"),
-        Bundled(FACE_PACKAGE, "Glucose Glance watch face", "glucose-watchface.apk", "watchface"),
+        Bundled(APP_PACKAGE, "ClearBG Watch app", "glucose-app.apk", "app"),
+        Bundled(FACE_PACKAGE, "ClearBG Watch Face", "glucose-watchface.apk", "watchface"),
     )
 
     private var keyReady = false
@@ -56,7 +56,7 @@ object WatchLink {
     /**
      * The phone needs its own "ADB key" so the watch can remember it after pairing.
      * It is created once and kept in this app's private storage (never backed up,
-     * never sent anywhere). This is NOT a Glucose Glance signing key.
+     * never sent anywhere). This is NOT a ClearBG Watch signing key.
      */
     fun setUp(context: Context) {
         if (keyReady) return
@@ -111,9 +111,9 @@ object WatchLink {
     // ---------------- Install or update ----------------
 
     /**
-     * Step 0 (READ-ONLY on the watch): copies the Glucose Glance app and watch face
+     * Step 0 (READ-ONLY on the watch): copies the ClearBG Watch app and watch face
      * that are installed on the watch to the phone's Downloads, folder
-     * "Glucose Glance backup". Returns the file names saved.
+     * "ClearBG Watch backup". Returns the file names saved.
      */
     suspend fun saveCopies(context: Context, host: String, port: Int): List<String> = withContext(Dispatchers.IO) {
         val saved = mutableListOf<String>()
@@ -125,7 +125,7 @@ object WatchLink {
                 check(paths.isNotEmpty()) { "Could not find the ${b.label} files on the watch." }
                 for ((i, remote) in paths.withIndex()) {
                     val suffix = if (i == 0) "" else "-part${i + 1}"
-                    val name = "Glucose-Glance-${version}-${b.fileLabel}$suffix.apk"
+                    val name = "ClearBG-${version}-${b.fileLabel}$suffix.apk"
                     val tmp = File(context.cacheDir, name)
                     try {
                         watch.pull(tmp, remote) // copy FROM the watch, nothing is changed there
@@ -221,7 +221,7 @@ object WatchLink {
 
     /**
      * Copies a packed file to private storage, checks it is the expected package
-     * and is signed with the Glucose Glance key, then runs [block] with it.
+     * and is signed with the ClearBG Watch key, then runs [block] with it.
      */
     private inline fun <T> withVerifiedApk(context: Context, b: Bundled, block: (File, String, Long) -> T): T {
         check(b in BUNDLED) { "Blocked: not an allowed package." }
@@ -235,7 +235,7 @@ object WatchLink {
             check(info.packageName == b.pkg) { "Blocked: the packed ${b.label} file is the wrong app." }
             val signers = info.signingInfo?.apkContentsSigners.orEmpty()
             val genuine = signers.isNotEmpty() && signers.all { sha256(it.toByteArray()) == GLUCOSE_CERT_SHA256 }
-            check(genuine) { "Blocked: the packed ${b.label} file is not signed with the Glucose Glance key." }
+            check(genuine) { "Blocked: the packed ${b.label} file is not signed with the ClearBG Watch key." }
             val code = if (android.os.Build.VERSION.SDK_INT >= 28) info.longVersionCode else @Suppress("DEPRECATION") info.versionCode.toLong()
             return block(apk, info.versionName ?: "?", code)
         } finally {
@@ -299,6 +299,6 @@ data class WatchInfo(
             else -> "Android API $sdkLevel"
         }
 
-    /** Glucose Glance's watch face needs Watch Face Format, Wear OS 4 (API 33) or newer. */
+    /** ClearBG Watch's watch face needs Watch Face Format, Wear OS 4 (API 33) or newer. */
     val faceSupported: Boolean get() = (sdkLevel.toIntOrNull() ?: 0) >= 33
 }

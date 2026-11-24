@@ -13,7 +13,7 @@
     <application
         android:allowBackup="false"
         android:icon="@drawable/ic_launcher"
-        android:label="Glucose Glance Installer"
+        android:label="ClearBG Installer"
         android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
 
         <activity

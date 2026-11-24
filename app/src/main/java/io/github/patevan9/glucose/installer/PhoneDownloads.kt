@@ -8,11 +8,11 @@ import android.provider.MediaStore
 import java.io.File
 
 /**
- * Saves a file into the phone's Downloads folder, in "Glucose Glance backup".
+ * Saves a file into the phone's Downloads folder, in "ClearBG backup".
  * Files there stay even if this installer is removed.
  */
 object PhoneDownloads {
-    const val FOLDER = "Glucose Glance backup"
+    const val FOLDER = "ClearBG backup"
 
     fun save(context: Context, source: File, name: String) {
         if (Build.VERSION.SDK_INT >= 29) {
